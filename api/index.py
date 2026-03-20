@@ -10,5 +10,12 @@ if os.environ.get("VERCEL"):
     except ImportError:
         pass
 
+# Hack to force Vercel's AST parser to bundle the data directory
+try:
+    import data
+    import data.chroma
+except ImportError:
+    pass
+
 # Import the pre-configured Flask app so Vercel can serve it
 from src.api_server import app
