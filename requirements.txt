@@ -38,3 +38,6 @@ nltk>=3.8.0
 
 # Additional utilities
 numpy>=1.24.0
+
+# Vercel Serverless SQLite Support
+pysqlite3-binary>=0.5.2.post3
