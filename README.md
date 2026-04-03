@@ -107,6 +107,10 @@ You must provide your OpenAI API key for the embedding and completion models to 
    ```env
    OPENAI_API_KEY=sk-your-actual-api-key-here
    ```
+3. Optional: enable LangChain pipeline by adding:
+   ```env
+   USE_LANGCHAIN_PIPELINE=true
+   ```
 
 ---
 
@@ -119,7 +123,7 @@ To start the backend flask server along with the web interface:
 python src/api_server.py
 ```
 
-The application will launch locally at `http://127.0.0.1:5000` (or the port specified in terminal). Open this URL in your browser to access the Web UI.
+The application will launch locally at `http://127.0.0.1:5050` (or the port specified in terminal). Open this URL in your browser to access the Web UI.
 
 ---
 

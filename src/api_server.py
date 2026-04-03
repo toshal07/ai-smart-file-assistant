@@ -12,6 +12,7 @@ Frontend: http://127.0.0.1:5000
 """
 
 import os
+import sys
 import logging
 from datetime import datetime
 from functools import wraps
@@ -20,6 +21,10 @@ from flask import Flask, request, jsonify, session, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+load_dotenv(os.path.join(_PROJECT_ROOT, ".env"))
 load_dotenv()
 
 # ── Logging ────────────────────────────────────────────────────────────────
@@ -32,7 +37,7 @@ logger = logging.getLogger("api_server")
 # ── Flask App ───────────────────────────────────────────────────────────────
 app = Flask(
     __name__,
-    static_folder=os.path.join(os.path.dirname(os.path.dirname(__file__)), "static"),
+    static_folder=os.path.join(_PROJECT_ROOT, "static"),
     static_url_path=""
 )
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "fileai-dev-secret-2026")
@@ -41,14 +46,18 @@ CORS(app, supports_credentials=True)
 # ── Backend Init ────────────────────────────────────────────────────────────
 _db = None
 _qa = None
+_qa_init_error = None
 
 
 def _get_db():
     global _db
     if _db is None:
         try:
-            from modules.chromadb_handler import ChromaDBHandler
-            db_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "chroma")
+            try:
+                from src.modules.chromadb_handler import ChromaDBHandler
+            except ImportError:
+                from modules.chromadb_handler import ChromaDBHandler
+            db_dir = os.path.join(_PROJECT_ROOT, "data", "chroma")
             
             # Vercel Serverless File System Workaround
             if os.environ.get("VERCEL"):
@@ -71,22 +80,50 @@ def _get_db():
     return _db
 
 
+def _use_langchain_pipeline():
+    return os.getenv("USE_LANGCHAIN_PIPELINE", "false").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _get_qa():
-    global _qa
+    global _qa, _qa_init_error
     if _qa is None:
         db = _get_db()
         if db is None:
+            _qa_init_error = "Vector database is not available"
             return None
         try:
-            from modules.qa_system import QASystem
-            from modules.openai_handler import OpenAIHandler
-            _qa = QASystem(
+            use_langchain = _use_langchain_pipeline()
+
+            if use_langchain:
+                try:
+                    from src.modules.langchain_qa_system import LangChainQASystem
+                    qa_cls = LangChainQASystem
+                except ImportError:
+                    from modules.langchain_qa_system import LangChainQASystem
+                    qa_cls = LangChainQASystem
+            else:
+                try:
+                    from src.modules.qa_system import QASystem
+                    qa_cls = QASystem
+                except ImportError:
+                    from modules.qa_system import QASystem
+                    qa_cls = QASystem
+
+            try:
+                from src.modules.openai_handler import OpenAIHandler
+            except ImportError:
+                from modules.openai_handler import OpenAIHandler
+
+            _qa = qa_cls(
                 vector_db=db,
                 openai_handler=OpenAIHandler(),
                 top_k=int(os.getenv("TOP_K", 8))
             )
-            logger.info("QASystem initialised")
+            mode = "LangChainQASystem" if use_langchain else "QASystem"
+            logger.info(f"{mode} initialised")
+            _qa_init_error = None
         except Exception as e:
+            _qa_init_error = str(e)
             logger.error(f"QASystem init failed: {e}")
             _qa = None
     return _qa
@@ -182,7 +219,11 @@ def chat():
 
     qa = _get_qa()
     if qa is None:
-        return jsonify({"error": "AI backend is not available. Check your OpenAI API key and ChromaDB."}), 503
+        if not os.getenv("OPENAI_API_KEY"):
+            return jsonify({"error": "AI backend is unavailable: OPENAI_API_KEY is missing. Add it to your project .env file."}), 503
+        if _use_langchain_pipeline():
+            return jsonify({"error": "AI backend is unavailable in LangChain mode. Ensure langchain-openai is installed and configuration is valid.", "details": _qa_init_error}), 503
+        return jsonify({"error": "AI backend is unavailable. Check ChromaDB initialization and backend logs.", "details": _qa_init_error}), 503
 
     # Apply user settings to QA system
     user_data = _get_session_data()
@@ -580,5 +621,6 @@ if __name__ == "__main__":
     logger.info("Initialising backend (DB + QA)...")
     _get_db()
     _get_qa()
-    logger.info("Starting FileAI API server on http://127.0.0.1:5000")
-    app.run(host="127.0.0.1", port=5000, debug=True, use_reloader=False)
+    port = int(os.getenv("PORT", "5050"))
+    logger.info(f"Starting FileAI API server on http://127.0.0.1:{port}")
+    app.run(host="127.0.0.1", port=port, debug=True, use_reloader=False)
