@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI File Assistant 🤖📁
 
 ![Project Status](https://img.shields.io/badge/Status-Active-brightgreen)
@@ -138,10 +139,77 @@ pytest tests/
 To manually ingest specific seed PDFs before starting the server, use:
 ```bash
 python src/ingest_pdfs.py
+=======
+# 🤖 AI Smart File Assistant
+
+An AI-powered document assistant that allows users to query multiple PDF documents and receive context-aware answers using advanced NLP and Retrieval-Augmented Generation (RAG).
+
+---
+
+## 🚀 Features
+
+* 📄 Upload and process multiple PDF documents
+* 💬 AI-powered chat interface
+* 🧠 Context-aware responses using LLMs
+* 🔍 Semantic search using vector embeddings
+* 📊 Key insights extraction
+* 📁 Document explorer
+* 🔐 Secure authentication system
+* ⚙️ Customizable AI settings
+
+---
+
+## 🧠 Tech Stack
+
+**Frontend:**
+
+* HTML, CSS, JavaScript / Streamlit
+
+**Backend:**
+
+* Python (Flask / Streamlit)
+
+**AI/ML:**
+
+* OpenAI API (LLM + Embeddings)
+
+**Database:**
+
+* FAISS / ChromaDB (Vector Database)
+
+---
+
+## 🏗️ Architecture
+
+1. Upload PDFs
+2. Extract and clean text
+3. Split into chunks
+4. Convert into embeddings
+5. Store in vector database
+6. Perform similarity search
+7. Generate AI response
+
+---
+
+## 📸 Screenshots
+
+(Add your UI screenshots here)
+
+---
+
+## ⚙️ Installation
+
+```bash
+git clone https://github.com/your-username/ai-smart-file-assistant.git
+cd ai-smart-file-assistant
+pip install -r requirements.txt
+streamlit run app.py
+>>>>>>> 4545a9109d9430301232e4416ce0c8e10950c214
 ```
 
 ---
 
+<<<<<<< HEAD
 ## ⚠️ Troubleshooting
 
 *   **`ModuleNotFoundError`**: Ensure you have activated your virtual environment and successfully installed the requirements (`pip install -r requirements.txt`).
@@ -153,3 +221,23 @@ python src/ingest_pdfs.py
 ## 👥 Contributors
 
 Created and maintained by the FileAI Team as part of the Infosys Spring Internship Pipeline. 
+=======
+## 🔮 Future Scope
+
+* 🎤 Voice-based queries
+* 🌍 Multi-language support
+* ⚡ Real-time document updates
+* 📈 Advanced analytics
+
+---
+
+## 👨‍💻 Contributors
+
+* Your Name + Team Members
+
+---
+
+## ⭐ License
+
+This project is for academic and learning purposes.
+>>>>>>> 4545a9109d9430301232e4416ce0c8e10950c214

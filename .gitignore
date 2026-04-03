@@ -1,68 +1,41 @@
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+*.pyc
+*.pyo
+*.pyd
 
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv
-
-# Environment Variables
+# Environment
 .env
+venv/
+env/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pytest
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Streamlit
-.streamlit/secrets.toml
-
-# Vector Database
-chroma_db/
-bindings/
-embeddings_cache/
-*.faiss
-*.index
-
-# Data files
-data/uploaded/
-*.pdf
-!data/test_data/*.pdf
 
 # Logs
 *.log
 logs/
 
-# OS
-.DS_Store
-Thumbs.db
+# Streamlit
+.streamlit/secrets.toml
+
+# Vector DB / AI files
+chroma_db/
+*.faiss
+*.index
+embeddings_cache/
+
+# Data (avoid large files)
+data/uploaded/
+*.pdf
+
+# Allow test/sample PDFs (optional)
+!data/test_data/*.pdf
